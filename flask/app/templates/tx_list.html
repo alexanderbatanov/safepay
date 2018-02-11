@@ -1,0 +1,56 @@
+<html>
+<head>
+ <title>{{title}} - SafePay</title>
+ <link href="../../static/css/darkly-bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      <a class="nav-link" href="/"><b>SafePay</b></a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/cnts">Transctaion Counts</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="/api/tx/10">Blacklisted Parties</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Link</a>
+    </li>
+  </ul>
+  <div class="container">
+   <h1>Blacklisted Parties</h1>
+
+   <table style="width:100%" class="table table-striped">
+    <tr>
+      <th>ID</th>
+      <th>Reason</th> 
+      <th>Party Type</th> 
+    </tr>
+    {%for val in mylist%}
+    <tr>
+      <td>{{val.id}}</td>
+      <td>{{val.reason}}</td> 
+      <td>{{val.type}}</td> 
+    </tr>
+    {%endfor%}
+  </table>
+</div>
+
+<!-- 	<ul>
+
+		{%for val in mylist%}
+		<li>
+			{{val}}
+		</li>
+		{%endfor%}
+
+	</ul> -->
+
+
+  <script src="../../static/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+
