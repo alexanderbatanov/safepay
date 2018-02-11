@@ -4,21 +4,21 @@ Insight Data Engineering project
 
 [Presentation](https://docs.google.com/presentation/d/1_lU_j1KYGDEHNnhl2ZPPzT0R1si3TQVir_rS-OTf50U)
 
-# Motivation
+## Motivation
 
 Objectives of exploring P2P transactions
 
-# Stack
+## Stack
 
 Justify technology choices
 
-# Architecture
+## Architecture
 
 Decoupled Fast and Safe
 
 Data model and data flow
 
-# Results
+## Results
 
 DB/disk is the bottleneck
 
