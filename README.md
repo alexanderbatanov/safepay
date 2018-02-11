@@ -12,13 +12,13 @@ Objectives of exploring P2P transactions
 
 Justify technology choices
 
-[Data pipeline](diagrams/pipeline.png)
+![Data pipeline](diagrams/pipeline.png)
 
 ## Architecture
 
 Decoupled Fast and Safe
 
-[Data Model](diagrams/data_flow.png)
+![Data Model](diagrams/data_flow.png)
 
 Explain data flow
 
