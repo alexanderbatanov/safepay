@@ -6,11 +6,11 @@ Insight Data Engineering project
 
 ## Motivation
 
-An objectives of my [Insight Data Engineering](http://insightdataengineering.com/) project was to explore how companies such as PayPal process large volumes transaction data in fast and safe manner. Not meeting **Fast** and **Safe** requirements may create negative impact - either customers will flock or company's reputation is compromised. Meeting both requirements represents a technical challenge. Time to evaluate compliance rules is bounded, yet all the rules need to be evaluated.
+Objective of my [Insight Data Engineering](http://insightdataengineering.com/) project was to explore how companies like PayPal process large volumes transaction data in fast and safe manner. Not meeting these requirements could lead to negative consequences - either customers will flock or company's reputation is compromised. Meeting the requirements represents a technical challenge - time to evaluate compliance rules is bounded, yet all the rules need to be evaluated.
 
-For SafePay project I used [Venmo](https://venmo.com/) data. The dataset (62G) covered 6 year time period. I ran experiments on a subset of about 100 days (1/1/17-4/18/17) with 44M transactions. The data itself was rather simple: (datetime, from_party, to_party).
+For SafePay project I used [Venmo](https://venmo.com/) data. The 62G dataset had 6 years worth of transactions data. I ran experiments on a 100 day subset (1/1/17-4/18/17) with 44M transactions. The data itself was rather simple: (transaction_datetime, from_party, to_party).
 
-SafePay project codified simple business rules:
+The following business rules were codified:
 * **Safe:** If a Party conducted more than a predefined number (e.g. 30) of transactions in a given time interval (e.g. 1 day), or if transaction volume grew significantly (e.g. 3-fold) compared to previous time interval, the party is blacklisted
 * **Fast:** If either Party is blacklisted, transaction is denied (and sent for further investigation)
 
