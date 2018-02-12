@@ -6,7 +6,7 @@ Insight Data Engineering project
 
 ## Motivation
 
-Objective of my [Insight Data Engineering](http://insightdataengineering.com/) project was to explore how companies like PayPal process large volumes transaction data in fast and safe manner. Not meeting these requirements could lead to negative consequences - either customers will flock or company's reputation is compromised. Meeting the requirements represents a technical challenge - time to evaluate compliance rules is bounded, yet all the rules need to be evaluated.
+Main objective of my [Insight Data Engineering](http://insightdataengineering.com/) project was to explore how companies like PayPal process large volumes transaction data in fast and safe manner. Not meeting these requirements could lead to negative consequences - either customers will flock or company's reputation is compromised. Meeting the requirements represents a technical challenge - time to evaluate compliance rules is bounded, yet all the rules need to be evaluated.
 
 For SafePay project I used [Venmo](https://venmo.com/) data. The 62G dataset had 6 years worth of transactions. I ran experiments on a 100 day subset (1/1/17-4/18/17) with 44M transactions. The data itself was rather simple: (transaction_datetime, from_party, to_party).
 
@@ -24,16 +24,22 @@ The second rule could be evaluated in real time, while the first rule requires b
 
 ## Architecture
 
-One of my objectives was to make architecture flexible by decoupling streaming and batch jobs, so that they can evolve independently. In the current implementation the jobs are not aware of each other and communicate via the database only. The streaming job ("process_transactions.py") evaluates if Parties are blacklisted, marks up transaction records, and dumps them into a table. At each iteration the batch job ("calculate_stat.py") extracts one day worth of transactions (using UTC datetime stamps), compares new and old transaction volumes, and decides if Parties have to be blacklisted according to the rules specified above.  
+My other objective was to make solution architecture flexible by decoupling streaming and batch processing. Independent components are easier to evolve. SafePay jobs communicate via the database. The streaming job ("process_transactions.py") evaluates if Parties are blacklisted, marks up transaction records, and dumps them into a table. The batch job ("calculate_stat.py") at each iteration filters out one day transaction window, compares transaction volumes, and blacklist Parties based on the rules above.
 
 ![Data Model](diagrams/data_flow.png)
 
-My initial data model had a single Party statistics table and two separate tables for approved and denied transactions (the latter would be reviewed by compliance team). Transaction tables were sorted on datetime stamps. This approach was changed to the current model to speed up database writes. Approved and denied transactions records can be split by and sorted by a batch job. Calculating senders and receivers statistics independently can be parallelized. Note that it is still may be worth while building a single "short" table of all blacklisted parties and bringing it into Spark Streaming memory for each micro-batch processed. This type of Party data aggregation was running the longest, since it requires finding uniques in a joined list of Senders and Receivers.
+I had to re-factor my initial data model with a single Party statistics table and two separate tables for approved and denied transactions. Sorted transactions order in Cassandra was removed to speed up database writes. Sorting, as well as separating approved and denied transactions, can be achieved by a batch job.
+
+ Separating Sender and Receiver statistics calculation also made sense from a performance perspective. Aggregating Party data into a single table ran the longest. This could still be done, but for blacklisted flag only. Such "short" table can be brought in and persisted in the streaming worker nodes memory as a dataframe.
 
 ## Results
 
-Quick performance evaluation revealed that database access appears to be the bottleneck. Since most parties do not conduct transactions at high frequency, Cassandra reads would most likely result in disk access as opposed to in-memory cache. Current throughput is less then 1000 transactions/second. It increases 3 times if database access is removed from the equation.
+Quick performance evaluation revealed that database access is the bottleneck. Current SafePay throughput is about 900 transactions/second. If database access is removed, it increases 3 times.
 
-It is worth noting that using Spark dataframes for database access (both reads and writes) proved to be more performant compared to using prepared statements. This is probably due to the fact that Spark is managing database connection pool. Using immutable dataframes for updates and inserts required a trick. Temporary columns were added to dataframes to store calculation results, and then renamed according to database schema (original columns had to be dropped).  
+Since most parties do not conduct transactions at high frequency, Cassandra reads are likely to hit the disk. Persisted dataframe approach described above could help solve this problem.
 
-Venmo data was replayed at about x200 speed (7 min for one day's worth of transactions). This made it difficlt to schedule the batch job using crontab. If it would get ahead of the streaming job, its time window would only be partially filled with transactions, or even empty. If it would lag behind, not all non-compliant Parties would be blacklisted in time. In production environment coordination between streaming and batch jobs would be required. Both can be wrapped in APIs that expose their processing state. In general, to reduce the possibility of non-compliant transactions getting through, time windows of streaming and batch jobs should be brought closer. On the streaming side this can be achieved with Spark Stateful Stream Processing which will require more memory on worker nodes. On the batch side running more batches in parallel more frequently (i.e. scaling out) could provide the solution.
+Using Spark dataframes to access Cassandra proved to be more performant then prepared statements. With dataframes Spark is managing database connection pool. A trick was required to update Cassandra with immutable dataframes - temporary columns were added, calculated and renamed to match database schema.
+
+Coordinating batch and streaming jobs presented and interesting challenge. Since Venmo data was replayed at about x200 speed (7 mins to push through one day of transactions), batch could potentially get ahead of streaming, and vice versa. If batch steps ahead faster, it will not have data in its' time window to process. One potential solution in a production environment would be to wrap jobs in APIs that expose processing state. Technologies such as [Airflow](https://airflow.apache.org/) could provide job coordination as well.
+
+In general, to reduce possibility of non-compliant transactions getting through, time windows of streaming and batch jobs should be brought closer. Streaming window can be extended with Spark Stateful Stream Processing (which may require additional memory on worker nodes). Batches can run more frequently by scaling out Spark.
