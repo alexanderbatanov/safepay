@@ -6,15 +6,15 @@ Insight Data Engineering project
 
 ## Motivation
 
-The objectives of my [Insight Data Engineering](http://insightdataengineering.com/) project was to explore how companies such as PayPal process large volumes of transactions in a fast and safe manner. Not being able to meet these requirements may have a negative impact - either customers will flock or company's reputation is compromised. From a technical perspective meeting both requirements represents a challenge. There is only a couple of seconds to evaluate compliance rules for any given transaction.
+An objectives of my [Insight Data Engineering](http://insightdataengineering.com/) project was to explore how companies such as PayPal process large volumes transaction data in fast and safe manner. Not meeting **Fast** and **Safe** requirements may create negative impact - either customers will flock or company's reputation is compromised. Meeting both requirements represents a technical challenge. Time to evaluate compliance rules is bounded, yet all the rules need to be evaluated.
 
-I was able to use historical [Venmo](https://venmo.com/) data previously scraped at Insight from an API. Transaction data represented a time period between 2011 and early 2017. The size of the entire dataset was 62G. For my project I have use a subset of about 100 days in early 2017 (1/1-4/18) with 44M transactions. The itself data was rather simple: (datetime, from_party, to_party).
+For SafePay project I used [Venmo](https://venmo.com/) data. The dataset (62G) covered 6 year time period. I ran experiments on a subset of about 100 days (1/1/17-4/18/17) with 44M transactions. The data itself was rather simple: (datetime, from_party, to_party).
 
 SafePay project codified simple business rules:
-* If a Party conducted more than a predefined number (e.g. 30) of transactions in a given time interval (e.g. 1 day), or if transaction volume grew significantly (e.g. 3-fold) compared to previous time interval, the party is blacklisted
-* If either Party is blacklisted, transaction is denied (and sent for further investigation)
+* **Safe:** If a Party conducted more than a predefined number (e.g. 30) of transactions in a given time interval (e.g. 1 day), or if transaction volume grew significantly (e.g. 3-fold) compared to previous time interval, the party is blacklisted
+* **Fast:** If either Party is blacklisted, transaction is denied (and sent for further investigation)
 
-The second **Safe** rule can be evaluated in real time, while the first **Fast** rule requires data aggregation over a time window, which necessitates batch processing. Quick analysis of dataset revealed that most Parties conducted less 3 transaction per day, with only a few senders pushing out more than a 100 payments. Such transactions would be denied by SafPay (until their validity is established, e.g. small business payroll).
+The second rule could be evaluated in real time, while the first rule requires batch data aggregation over time window. Quick analysis of dataset revealed that most Parties conducted less 3 transaction per day, with only a few senders pushing out more than a 100 payments. Such transactions would be denied by SafPay (until their validity is established, e.g. small business payroll).
 
 ## Stack
 
