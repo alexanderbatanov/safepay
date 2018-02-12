@@ -8,17 +8,17 @@ Insight Data Engineering project
 
 Objective of my [Insight Data Engineering](http://insightdataengineering.com/) project was to explore how companies like PayPal process large volumes transaction data in fast and safe manner. Not meeting these requirements could lead to negative consequences - either customers will flock or company's reputation is compromised. Meeting the requirements represents a technical challenge - time to evaluate compliance rules is bounded, yet all the rules need to be evaluated.
 
-For SafePay project I used [Venmo](https://venmo.com/) data. The 62G dataset had 6 years worth of transactions data. I ran experiments on a 100 day subset (1/1/17-4/18/17) with 44M transactions. The data itself was rather simple: (transaction_datetime, from_party, to_party).
+For SafePay project I used [Venmo](https://venmo.com/) data. The 62G dataset had 6 years worth of transactions. I ran experiments on a 100 day subset (1/1/17-4/18/17) with 44M transactions. The data itself was rather simple: (transaction_datetime, from_party, to_party).
 
 The following business rules were codified:
-* **Safe:** If a Party conducted more than a predefined number (e.g. 30) of transactions in a given time interval (e.g. 1 day), or if transaction volume grew significantly (e.g. 3-fold) compared to previous time interval, the party is blacklisted
+* **Safe:** If a Party conducted more than a predefined number (30) of transactions in a given time interval (1 day), or if transaction volume grew significantly (3-fold) compared to previous time interval, the Party is blacklisted
 * **Fast:** If either Party is blacklisted, transaction is denied (and sent for further investigation)
 
-The second rule could be evaluated in real time, while the first rule requires batch data aggregation over time window. Quick analysis of dataset revealed that most Parties conducted less 3 transaction per day, with only a few senders pushing out more than a 100 payments. Such transactions would be denied by SafPay (until their validity is established, e.g. small business payroll).
+The second rule could be evaluated in real time, while the first rule requires batch data aggregation over a time window. Quick analysis revealed that most Parties conducted less than 3 transaction per day, with only a few pushing out more than a 100.
 
-## Stack
+## Technology Stack
 
-The business problem called for both real-time and batch operations, and **Spark** was a natural choice as a processing engine that supports streaming, data partitioning and parallelized data aggregation. Spark would also allow to extend business rules with machine learning algorithms via MLlib and payment graph computation via GraphX. Assuming that processing transactions from multiple channels (e.g. mobile, web, POS) is centralized and no transaction routing is required, **Kafka** with its ability to handle extremely high throughput was chosen a messaging platform. **Cassandra** database was selected for its ability to support fast writes into memory cache. 
+**Spark** was a natural choice for a processing engine. It supports streaming, data partitioning and parallel data aggregation (MapReduce). It is also possible to extend business rules with machine learning algorithms (MLlib) and payment graph processing (GraphX). **Kafka** with its ability to handle extremely high throughput was chosen a messaging platform. **Cassandra** was selected for its ability to support fast writes into memory cache. 
 
 ![Data pipeline](diagrams/pipeline.png)
 
