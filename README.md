@@ -2,7 +2,8 @@
 SafePay - fast and safe P2P payments
 Insight Data Engineering project
 
-[Presentation](https://docs.google.com/presentation/d/1_lU_j1KYGDEHNnhl2ZPPzT0R1si3TQVir_rS-OTf50U)
+[Presentation](https://docs.google.com/presentation/d/1JR7L710jD4M0o3LXP-r2BkpmK-nZVkOQNZlQGEcHJ8U)
+[Demo video](https://www.youtube.com/watch?v=OU6cgE5KC8o&index=1&list=UUZBJPaPuJrYc-3z961a92xQ)
 
 ## Motivation
 
