@@ -2,7 +2,7 @@
 SafePay - fast and safe P2P payments
 Insight Data Engineering project
 
-[Presentation and Demo](http://safepay.batanov.nyc)
+[Presentation and Demo](https://docs.google.com/presentation/d/1ovoITgmtbgaLgSQ6OpOcJZSqeuqSWNG25CYEToYT_6Y/edit?usp=sharing)
 
 ## Motivation
 
